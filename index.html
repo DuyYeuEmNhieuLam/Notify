@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord Notify Hub</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+    min-height: 100vh;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  /* ===== SIDEBAR ===== */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 280px;
+    background: rgba(20, 20, 35, 0.95);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+    padding: 24px 16px;
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .sidebar-header h2 {
+    font-size: 1.3rem;
+    background: linear-gradient(90deg, #5865f2, #eb459e);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 800;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .close-btn:hover {
+    opacity: 1;
+  }
+
+  .channel-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .channel-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: #ccc;
+  }
+
+  .channel-item:hover {
+    background: rgba(88, 101, 242, 0.15);
+    border-color: rgba(88, 101, 242, 0.4);
+    transform: translateX(4px);
+    color: #fff;
+  }
+
+  .channel-item.active {
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.3), rgba(235, 69, 158, 0.2));
+    border-color: #5865f2;
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(88, 101, 242, 0.3);
+  }
+
+  .channel-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+
+  .icon-leak { background: linear-gradient(135deg, #ff4757, #ff6b81); }
+  .icon-update { background: linear-gradient(135deg, #1e90ff, #00d4ff); }
+  .icon-announce { background: linear-gradient(135deg, #feca57, #ff9f43); }
+
+  .channel-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .channel-info .name {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .channel-info .desc {
+    font-size: 0.75rem;
+    opacity: 0.6;
+  }
+
+  /* ===== OVERLAY ===== */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.35s;
+    z-index: 999;
+  }
+
+  .overlay.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ===== TOPBAR ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    background: rgba(20, 20, 35, 0.7);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .hamburger {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 10px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    cursor: pointer;
+    transition: all 0.25s;
+    flex-shrink: 0;
+  }
+
+  .hamburger:hover {
+    background: rgba(88, 101, 242, 0.25);
+    border-color: #5865f2;
+  }
+
+  .hamburger span {
+    display: block;
+    width: 20px;
+    height: 2.5px;
+    background: #fff;
+    border-radius: 2px;
+    transition: 0.3s;
+  }
+
+  .topbar-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .topbar-title .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #3ba55d;
+    box-shadow: 0 0 10px #3ba55d;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* ===== MAIN ===== */
+  .main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 30px 20px 60px;
+  }
+
+  .card {
+    background: rgba(30, 30, 50, 0.75);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .card-header .channel-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.5rem;
+  }
+
+  .card-header h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  .card-header p {
+    font-size: 0.85rem;
+    color: #9a9ab0;
+    margin-top: 2px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #b8b8d0;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-group textarea,
+  .form-group input {
+    width: 100%;
+    background: rgba(10, 10, 20, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+    transition: all 0.25s;
+  }
+
+  .form-group textarea {
+    min-height: 120px;
+  }
+
+  .form-group textarea:focus,
+  .form-group input:focus {
+    outline: none;
+    border-color: #5865f2;
+    box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.25);
+    background: rgba(10, 10, 25, 0.85);
+  }
+
+  .form-group textarea::placeholder,
+  .form-group input::placeholder {
+    color: #5c5c7a;
+  }
+
+  .btn-send {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    background: linear-gradient(135deg, #5865f2, #eb459e);
+    background-size: 200% 200%;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    letter-spacing: 0.5px;
+    box-shadow: 0 8px 25px rgba(88, 101, 242, 0.35);
+  }
+
+  .btn-send:hover:not(:disabled) {
+    background-position: 100% 50%;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(88, 101, 242, 0.5);
+  }
+
+  .btn-send:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  .btn-send:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ===== TOAST ===== */
+  .toast {
+    position: fixed;
+    top: 90px;
+    right: 20px;
+    padding: 16px 22px;
+    border-radius: 14px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.92rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateX(420px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 2000;
+    max-width: 340px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .toast.show {
+    transform: translateX(0);
+  }
+
+  .toast.success {
+    background: linear-gradient(135deg, #1e9e5a, #3ba55d);
+  }
+
+  .toast.error {
+    background: linear-gradient(135deg, #c0392b, #ff4757);
+  }
+
+  .toast-icon {
+    font-size: 1.3rem;
+  }
+
+  /* ===== SPINNER ===== */
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  @media (max-width: 600px) {
+    .main { padding: 20px 14px 50px; }
+    .card { padding: 20px; border-radius: 16px; }
+    .topbar { padding: 14px 16px; }
+    .toast { right: 12px; left: 12px; max-width: none; transform: translateY(-120px); }
+    .toast.show { transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <h2>🚀 Notify Hub</h2>
+    <button class="close-btn" id="closeSidebar">&times;</button>
+  </div>
+  <div class="channel-list">
+    <div class="channel-item active" data-channel="leak">
+      <div class="channel-icon icon-leak">💀</div>
+      <div class="channel-info">
+        <span class="name">Leak</span>
+        <span class="desc">Kênh thông báo leak</span>
+      </div>
+    </div>
+    <div class="channel-item" data-channel="update">
+      <div class="channel-icon icon-update">🔄</div>
+      <div class="channel-info">
+        <span class="name">Update</span>
+        <span class="desc">Kênh cập nhật</span>
+      </div>
+    </div>
+    <div class="channel-item" data-channel="announcement">
+      <div class="channel-icon icon-announce">📢</div>
+      <div class="channel-info">
+        <span class="name">Announcement</span>
+        <span class="desc">Kênh thông báo chung</span>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- ===== TOPBAR ===== -->
+<header class="topbar">
+  <button class="hamburger" id="hamburger" aria-label="Mở menu">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+  <div class="topbar-title">
+    <span class="dot"></span>
+    <span id="currentChannelName">Kênh Leak</span>
+  </div>
+</header>
+
+<!-- ===== MAIN ===== -->
+<main class="main">
+  <div class="card" id="card">
+    <div class="card-header">
+      <div class="channel-icon icon-leak" id="cardIcon">💀</div>
+      <div>
+        <h3 id="cardTitle">Kênh Leak</h3>
+        <p id="cardDesc">Gửi thông báo đến webhook Leak</p>
+      </div>
+    </div>
+
+    <form id="notifyForm">
+      <div class="form-group">
+        <label for="message">Nội dung văn bản</label>
+        <textarea id="message" placeholder="Nhập nội dung thông báo..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="link">Link đính kèm (không bắt buộc)</label>
+        <input type="url" id="link" placeholder="https://example.com">
+      </div>
+
+      <div class="form-group">
+        <label for="video">Link video (không bắt buộc)</label>
+        <input type="url" id="video" placeholder="https://youtube.com/watch?v=...">
+      </div>
+
+      <button type="submit" class="btn-send" id="sendBtn">
+        <span id="sendText">📨 Gửi thông báo</span>
+      </button>
+    </form>
+  </div>
+</main>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✅</span>
+  <span id="toastMsg">Gửi thành công!</span>
+</div>
+
+<script>
+  // ===== WEBHOOKS =====
+  const WEBHOOKS = {
+    leak: 'https://discord.com/api/webhooks/1565736458554310791/qePwj2w5iJOgCuhI_bJJiZZwlePbctgP8MsiXhAYR5V60_mlDPZQ33HkR_AvGpp5cszW',
+    update: 'https://discord.com/api/webhooks/1565734147270381590/nhn4j3e0kdIg2msm5UVjaW38_7lWE3EMSe7oogt9WKecArJDfpMIJNvWiry0FUcWTLGR',
+    announcement: 'https://discord.com/api/webhooks/1565737056439898242/SpOcqkUSvfLlFwCjegz2JcyF90b6p_JwGl19wEQH_qSF85UeCoafgyQF6kLC7J-whYKc'
+  };
+
+  const CHANNEL_META = {
+    leak: {
+      name: 'Kênh Leak',
+      desc: 'Gửi thông báo đến webhook Leak',
+      icon: '💀',
+      iconClass: 'icon-leak'
+    },
+    update: {
+      name: 'Kênh Update',
+      desc: 'Gửi thông báo đến webhook Update',
+      icon: '🔄',
+      iconClass: 'icon-update'
+    },
+    announcement: {
+      name: 'Kênh Announcement',
+      desc: 'Gửi thông báo đến webhook Announcement',
+      icon: '📢',
+      iconClass: 'icon-announce'
+    }
+  };
+
+  let currentChannel = 'leak';
+
+  // ===== DOM =====
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('overlay');
+  const hamburger = document.getElementById('hamburger');
+  const closeSidebar = document.getElementById('closeSidebar');
+  const channelItems = document.querySelectorAll('.channel-item');
+  const currentChannelName = document.getElementById('currentChannelName');
+  const cardIcon = document.getElementById('cardIcon');
+  const cardTitle = document.getElementById('cardTitle');
+  const cardDesc = document.getElementById('cardDesc');
+  const card = document.getElementById('card');
+  const form = document.getElementById('notifyForm');
+  const messageInput = document.getElementById('message');
+  const linkInput = document.getElementById('link');
+  const videoInput = document.getElementById('video');
+  const sendBtn = document.getElementById('sendBtn');
+  const sendText = document.getElementById('sendText');
+  const toast = document.getElementById('toast');
+  const toastIcon = document.getElementById('toastIcon');
+  const toastMsg = document.getElementById('toastMsg');
+
+  // ===== SIDEBAR TOGGLE =====
+  function openSidebar() {
+    sidebar.classList.add('open');
+    overlay.classList.add('show');
+  }
+
+  function closeSidebarFn() {
+    sidebar.classList.remove('open');
+    overlay.classList.remove('show');
+  }
+
+  hamburger.addEventListener('click', openSidebar);
+  closeSidebar.addEventListener('click', closeSidebarFn);
+  overlay.addEventListener('click', closeSidebarFn);
+
+  // ===== CHANNEL SWITCH =====
+  channelItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const channel = item.dataset.channel;
+      if (channel === currentChannel) {
+        closeSidebarFn();
+        return;
+      }
+      currentChannel = channel;
+      updateUI();
+      closeSidebarFn();
+    });
+  });
+
+  function updateUI() {
+    const meta = CHANNEL_META[currentChannel];
+
+    // sidebar active
+    channelItems.forEach(i => {
+      i.classList.toggle('active', i.dataset.channel === currentChannel);
+    });
+
+    // topbar
+    currentChannelName.textContent = meta.name;
+
+    // card header
+    cardIcon.className = 'channel-icon ' + meta.iconClass;
+    cardIcon.textContent = meta.icon;
+    cardTitle.textContent = meta.name;
+    cardDesc.textContent = meta.desc;
+
+    // animation
+    card.style.animation = 'none';
+    void card.offsetWidth;
+    card.style.animation = 'fadeIn 0.4s ease';
+  }
+
+  // ===== TOAST =====
+  let toastTimer = null;
+
+  function showToast(msg, type = 'success') {
+    clearTimeout(toastTimer);
+    toastMsg.textContent = msg;
+    toast.className = 'toast ' + type;
+    toastIcon.textContent = type === 'success' ? '✅' : '❌';
+
+    requestAnimationFrame(() => {
+      toast.classList.add('show');
+    });
+
+    toastTimer = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 4000);
+  }
+
+  // ===== SEND =====
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const message = messageInput.value.trim();
+    const link = linkInput.value.trim();
+    const video = videoInput.value.trim();
+
+    // Validate
+    if (!message && !link && !video) {
+      showToast('Vui lòng nhập ít nhất một nội dung!', 'error');
+      return;
+    }
+
+    // Build content
+    let content = '';
+    if (message) content += message;
+    if (link) content += (content ? '\n\n' : '') + '🔗 **Link:** ' + link;
+    if (video) content += (content ? '\n\n' : '') + '🎬 **Video:** ' + video;
+
+    // Discord limit 2000 chars
+    if (content.length > 2000) {
+      showToast('Nội dung quá dài (tối đa 2000 ký tự)!', 'error');
+      return;
+    }
+
+    // Loading state
+    sendBtn.disabled = true;
+    sendText.innerHTML = '<span class="spinner"></span> Đang gửi...';
+
+    try {
+      const res = await fetch(WEBHOOKS[currentChannel], {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: content,
+          username: 'Notify Hub',
+          avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png'
+        })
+      });
+
+      if (res.ok || res.status === 204) {
+        showToast('Gửi thông báo thành công!', 'success');
+        form.reset();
+      } else {
+        let errMsg = 'Gửi thất bại (HTTP ' + res.status + ')';
+        try {
+          const errData = await res.json();
+          if (errData.message) errMsg = 'Lỗi: ' + errData.message;
+        } catch (_) {}
+        showToast(errMsg, 'error');
+      }
+    } catch (err) {
+      showToast('Lỗi kết nối mạng! Kiểm tra lại webhook.', 'error');
+      console.error(err);
+    } finally {
+      sendBtn.disabled = false;
+      sendText.textContent = '📨 Gửi thông báo';
+    }
+  });
+
+  // ===== INIT =====
+  updateUI();
+
+  // ESC close sidebar
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSidebarFn();
+  });
+</script>
+</body>
+</html>
