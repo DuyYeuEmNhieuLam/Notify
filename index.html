@@ -5,11 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Discord Notify Hub</title>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -22,8 +18,7 @@
   /* ===== SIDEBAR ===== */
   .sidebar {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     height: 100vh;
     width: 280px;
     background: rgba(20, 20, 35, 0.95);
@@ -35,10 +30,7 @@
     padding: 24px 16px;
     box-shadow: 4px 0 30px rgba(0, 0, 0, 0.5);
   }
-
-  .sidebar.open {
-    transform: translateX(0);
-  }
+  .sidebar.open { transform: translateX(0); }
 
   .sidebar-header {
     display: flex;
@@ -48,7 +40,6 @@
     padding-bottom: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
-
   .sidebar-header h2 {
     font-size: 1.3rem;
     background: linear-gradient(90deg, #5865f2, #eb459e);
@@ -57,32 +48,16 @@
     -webkit-text-fill-color: transparent;
     font-weight: 800;
   }
-
   .close-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 1.8rem;
-    cursor: pointer;
-    line-height: 1;
-    opacity: 0.7;
-    transition: opacity 0.2s;
+    background: none; border: none; color: #fff;
+    font-size: 1.8rem; cursor: pointer; line-height: 1;
+    opacity: 0.7; transition: opacity 0.2s;
   }
+  .close-btn:hover { opacity: 1; }
 
-  .close-btn:hover {
-    opacity: 1;
-  }
-
-  .channel-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
+  .channel-list { display: flex; flex-direction: column; gap: 10px; }
   .channel-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
+    display: flex; align-items: center; gap: 14px;
     padding: 14px 16px;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -91,130 +66,79 @@
     transition: all 0.25s ease;
     color: #ccc;
   }
-
   .channel-item:hover {
     background: rgba(88, 101, 242, 0.15);
     border-color: rgba(88, 101, 242, 0.4);
     transform: translateX(4px);
     color: #fff;
   }
-
   .channel-item.active {
     background: linear-gradient(135deg, rgba(88, 101, 242, 0.3), rgba(235, 69, 158, 0.2));
     border-color: #5865f2;
     color: #fff;
     box-shadow: 0 4px 20px rgba(88, 101, 242, 0.3);
   }
-
   .channel-icon {
-    width: 38px;
-    height: 38px;
+    width: 38px; height: 38px;
     border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; flex-shrink: 0;
   }
-
   .icon-leak { background: linear-gradient(135deg, #ff4757, #ff6b81); }
   .icon-update { background: linear-gradient(135deg, #1e90ff, #00d4ff); }
   .icon-announce { background: linear-gradient(135deg, #feca57, #ff9f43); }
 
-  .channel-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-
-  .channel-info .name {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .channel-info .desc {
-    font-size: 0.75rem;
-    opacity: 0.6;
-  }
+  .channel-info { display: flex; flex-direction: column; gap: 2px; }
+  .channel-info .name { font-weight: 600; font-size: 0.95rem; }
+  .channel-info .desc { font-size: 0.75rem; opacity: 0.6; }
 
   /* ===== OVERLAY ===== */
   .overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(3px);
-    opacity: 0;
-    visibility: hidden;
+    opacity: 0; visibility: hidden;
     transition: all 0.35s;
     z-index: 999;
   }
-
-  .overlay.show {
-    opacity: 1;
-    visibility: visible;
-  }
+  .overlay.show { opacity: 1; visibility: visible; }
 
   /* ===== TOPBAR ===== */
   .topbar {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+    display: flex; align-items: center; gap: 16px;
     padding: 18px 24px;
     background: rgba(20, 20, 35, 0.7);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
   }
-
   .hamburger {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 10px;
-    width: 44px;
-    height: 44px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    cursor: pointer;
-    transition: all 0.25s;
+    width: 44px; height: 44px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 5px;
+    cursor: pointer; transition: all 0.25s;
     flex-shrink: 0;
   }
-
   .hamburger:hover {
     background: rgba(88, 101, 242, 0.25);
     border-color: #5865f2;
   }
-
   .hamburger span {
-    display: block;
-    width: 20px;
-    height: 2.5px;
-    background: #fff;
-    border-radius: 2px;
-    transition: 0.3s;
+    display: block; width: 20px; height: 2.5px;
+    background: #fff; border-radius: 2px; transition: 0.3s;
   }
-
   .topbar-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 1.15rem; font-weight: 700;
+    display: flex; align-items: center; gap: 10px;
   }
-
   .topbar-title .dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: #3ba55d;
-    box-shadow: 0 0 10px #3ba55d;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #3ba55d; box-shadow: 0 0 10px #3ba55d;
     animation: pulse 2s infinite;
   }
-
   @keyframes pulse {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
@@ -226,7 +150,6 @@
     margin: 0 auto;
     padding: 30px 20px 60px;
   }
-
   .card {
     background: rgba(30, 30, 50, 0.75);
     backdrop-filter: blur(20px);
@@ -236,42 +159,20 @@
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     animation: fadeIn 0.4s ease;
   }
-
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
   }
-
   .card-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 24px;
-    padding-bottom: 20px;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 24px; padding-bottom: 20px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
+  .card-header .channel-icon { width: 48px; height: 48px; font-size: 1.5rem; }
+  .card-header h3 { font-size: 1.35rem; font-weight: 700; }
+  .card-header p { font-size: 0.85rem; color: #9a9ab0; margin-top: 2px; }
 
-  .card-header .channel-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 1.5rem;
-  }
-
-  .card-header h3 {
-    font-size: 1.35rem;
-    font-weight: 700;
-  }
-
-  .card-header p {
-    font-size: 0.85rem;
-    color: #9a9ab0;
-    margin-top: 2px;
-  }
-
-  .form-group {
-    margin-bottom: 20px;
-  }
-
+  .form-group { margin-bottom: 20px; }
   .form-group label {
     display: block;
     font-size: 0.85rem;
@@ -281,9 +182,9 @@
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
-
   .form-group textarea,
-  .form-group input {
+  .form-group input[type="url"],
+  .form-group input[type="text"] {
     width: 100%;
     background: rgba(10, 10, 20, 0.6);
     border: 1px solid rgba(255, 255, 255, 0.12);
@@ -295,22 +196,99 @@
     resize: vertical;
     transition: all 0.25s;
   }
-
-  .form-group textarea {
-    min-height: 120px;
-  }
-
+  .form-group textarea { min-height: 120px; }
   .form-group textarea:focus,
-  .form-group input:focus {
+  .form-group input[type="url"]:focus,
+  .form-group input[type="text"]:focus {
     outline: none;
     border-color: #5865f2;
     box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.25);
     background: rgba(10, 10, 25, 0.85);
   }
-
   .form-group textarea::placeholder,
-  .form-group input::placeholder {
-    color: #5c5c7a;
+  .form-group input::placeholder { color: #5c5c7a; }
+
+  /* ===== FILE UPLOAD ===== */
+  .file-drop {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: rgba(10, 10, 20, 0.6);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.25s;
+  }
+  .file-drop:hover,
+  .file-drop.dragover {
+    border-color: #5865f2;
+    background: rgba(88, 101, 242, 0.1);
+  }
+  .file-drop.has-file {
+    border-style: solid;
+    border-color: #3ba55d;
+    background: rgba(59, 165, 93, 0.1);
+  }
+  .file-drop input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+  }
+  .file-drop-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+  }
+  .file-drop-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+  }
+  .file-drop-title {
+    font-weight: 600;
+    font-size: 0.92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-drop-sub {
+    font-size: 0.78rem;
+    color: #9a9ab0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .file-clear {
+    margin-left: auto;
+    background: rgba(255, 71, 87, 0.2);
+    border: 1px solid rgba(255, 71, 87, 0.5);
+    color: #ff6b81;
+    border-radius: 8px;
+    width: 32px; height: 32px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    transition: all 0.2s;
+    z-index: 2;
+  }
+  .file-clear:hover {
+    background: rgba(255, 71, 87, 0.4);
+    color: #fff;
+  }
+  .file-drop.has-file .file-clear { display: flex; }
+
+  .file-hint {
+    font-size: 0.75rem;
+    color: #6c6c8a;
+    margin-top: 6px;
   }
 
   .btn-send {
@@ -325,78 +303,44 @@
     background: linear-gradient(135deg, #5865f2, #eb459e);
     background-size: 200% 200%;
     transition: all 0.3s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
     letter-spacing: 0.5px;
     box-shadow: 0 8px 25px rgba(88, 101, 242, 0.35);
   }
-
   .btn-send:hover:not(:disabled) {
     background-position: 100% 50%;
     transform: translateY(-2px);
     box-shadow: 0 12px 35px rgba(88, 101, 242, 0.5);
   }
-
-  .btn-send:active:not(:disabled) {
-    transform: translateY(0);
-  }
-
-  .btn-send:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
+  .btn-send:active:not(:disabled) { transform: translateY(0); }
+  .btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
 
   /* ===== TOAST ===== */
   .toast {
-    position: fixed;
-    top: 90px;
-    right: 20px;
+    position: fixed; top: 90px; right: 20px;
     padding: 16px 22px;
     border-radius: 14px;
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.92rem;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    color: #fff; font-weight: 600; font-size: 0.92rem;
+    display: flex; align-items: center; gap: 12px;
     transform: translateX(420px);
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2000;
     max-width: 340px;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
   }
+  .toast.show { transform: translateX(0); }
+  .toast.success { background: linear-gradient(135deg, #1e9e5a, #3ba55d); }
+  .toast.error { background: linear-gradient(135deg, #c0392b, #ff4757); }
+  .toast-icon { font-size: 1.3rem; }
 
-  .toast.show {
-    transform: translateX(0);
-  }
-
-  .toast.success {
-    background: linear-gradient(135deg, #1e9e5a, #3ba55d);
-  }
-
-  .toast.error {
-    background: linear-gradient(135deg, #c0392b, #ff4757);
-  }
-
-  .toast-icon {
-    font-size: 1.3rem;
-  }
-
-  /* ===== SPINNER ===== */
   .spinner {
-    width: 20px;
-    height: 20px;
+    width: 20px; height: 20px;
     border: 3px solid rgba(255, 255, 255, 0.3);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
   @media (max-width: 600px) {
     .main { padding: 20px 14px 50px; }
@@ -445,9 +389,7 @@
 <!-- ===== TOPBAR ===== -->
 <header class="topbar">
   <button class="hamburger" id="hamburger" aria-label="Mở menu">
-    <span></span>
-    <span></span>
-    <span></span>
+    <span></span><span></span><span></span>
   </button>
   <div class="topbar-title">
     <span class="dot"></span>
@@ -478,8 +420,22 @@
       </div>
 
       <div class="form-group">
-        <label for="video">Link video (không bắt buộc)</label>
-        <input type="url" id="video" placeholder="https://youtube.com/watch?v=...">
+        <label for="videoUrl">Link video (không bắt buộc)</label>
+        <input type="url" id="videoUrl" placeholder="https://youtube.com/watch?v=...">
+      </div>
+
+      <div class="form-group">
+        <label>Hoặc tải video từ máy</label>
+        <div class="file-drop" id="fileDrop">
+          <input type="file" id="videoFile" accept="video/*">
+          <div class="file-drop-icon" id="fileIcon">🎬</div>
+          <div class="file-drop-text">
+            <span class="file-drop-title" id="fileTitle">Chọn video hoặc kéo thả vào đây</span>
+            <span class="file-drop-sub" id="fileSub">Hỗ trợ: MP4, WebM, MOV... (tối đa 8MB)</span>
+          </div>
+          <button type="button" class="file-clear" id="fileClear" title="Xóa file">&times;</button>
+        </div>
+        <p class="file-hint">💡 Discord giới hạn file 8MB nếu không có boost. Video lớn hơn nên dùng link.</p>
       </div>
 
       <button type="submit" class="btn-send" id="sendBtn">
@@ -504,27 +460,13 @@
   };
 
   const CHANNEL_META = {
-    leak: {
-      name: 'Kênh Leak',
-      desc: 'Gửi thông báo đến webhook Leak',
-      icon: '💀',
-      iconClass: 'icon-leak'
-    },
-    update: {
-      name: 'Kênh Update',
-      desc: 'Gửi thông báo đến webhook Update',
-      icon: '🔄',
-      iconClass: 'icon-update'
-    },
-    announcement: {
-      name: 'Kênh Announcement',
-      desc: 'Gửi thông báo đến webhook Announcement',
-      icon: '📢',
-      iconClass: 'icon-announce'
-    }
+    leak: { name: 'Kênh Leak', desc: 'Gửi thông báo đến webhook Leak', icon: '💀', iconClass: 'icon-leak' },
+    update: { name: 'Kênh Update', desc: 'Gửi thông báo đến webhook Update', icon: '🔄', iconClass: 'icon-update' },
+    announcement: { name: 'Kênh Announcement', desc: 'Gửi thông báo đến webhook Announcement', icon: '📢', iconClass: 'icon-announce' }
   };
 
   let currentChannel = 'leak';
+  let selectedFile = null;
 
   // ===== DOM =====
   const sidebar = document.getElementById('sidebar');
@@ -540,81 +482,131 @@
   const form = document.getElementById('notifyForm');
   const messageInput = document.getElementById('message');
   const linkInput = document.getElementById('link');
-  const videoInput = document.getElementById('video');
+  const videoUrlInput = document.getElementById('videoUrl');
   const sendBtn = document.getElementById('sendBtn');
   const sendText = document.getElementById('sendText');
   const toast = document.getElementById('toast');
   const toastIcon = document.getElementById('toastIcon');
   const toastMsg = document.getElementById('toastMsg');
 
-  // ===== SIDEBAR TOGGLE =====
+  const fileDrop = document.getElementById('fileDrop');
+  const videoFile = document.getElementById('videoFile');
+  const fileTitle = document.getElementById('fileTitle');
+  const fileSub = document.getElementById('fileSub');
+  const fileIcon = document.getElementById('fileIcon');
+  const fileClear = document.getElementById('fileClear');
+
+  // ===== SIDEBAR =====
   function openSidebar() {
     sidebar.classList.add('open');
     overlay.classList.add('show');
   }
-
   function closeSidebarFn() {
     sidebar.classList.remove('open');
     overlay.classList.remove('show');
   }
-
   hamburger.addEventListener('click', openSidebar);
   closeSidebar.addEventListener('click', closeSidebarFn);
   overlay.addEventListener('click', closeSidebarFn);
 
-  // ===== CHANNEL SWITCH =====
+  // ===== CHANNEL =====
   channelItems.forEach(item => {
     item.addEventListener('click', () => {
       const channel = item.dataset.channel;
-      if (channel === currentChannel) {
-        closeSidebarFn();
-        return;
+      if (channel !== currentChannel) {
+        currentChannel = channel;
+        updateUI();
       }
-      currentChannel = channel;
-      updateUI();
       closeSidebarFn();
     });
   });
 
   function updateUI() {
     const meta = CHANNEL_META[currentChannel];
-
-    // sidebar active
-    channelItems.forEach(i => {
-      i.classList.toggle('active', i.dataset.channel === currentChannel);
-    });
-
-    // topbar
+    channelItems.forEach(i => i.classList.toggle('active', i.dataset.channel === currentChannel));
     currentChannelName.textContent = meta.name;
-
-    // card header
     cardIcon.className = 'channel-icon ' + meta.iconClass;
     cardIcon.textContent = meta.icon;
     cardTitle.textContent = meta.name;
     cardDesc.textContent = meta.desc;
-
-    // animation
     card.style.animation = 'none';
     void card.offsetWidth;
     card.style.animation = 'fadeIn 0.4s ease';
   }
 
+  // ===== FILE HANDLING =====
+  const MAX_SIZE = 8 * 1024 * 1024; // 8MB
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+
+  function setFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('video/')) {
+      showToast('Chỉ chấp nhận file video!', 'error');
+      return;
+    }
+    if (file.size > MAX_SIZE) {
+      showToast('File quá lớn! Tối đa 8MB (Discord limit).', 'error');
+      return;
+    }
+    selectedFile = file;
+    fileDrop.classList.add('has-file');
+    fileIcon.textContent = '✅';
+    fileTitle.textContent = file.name;
+    fileSub.textContent = formatSize(file.size) + ' • Sẵn sàng gửi';
+  }
+
+  function clearFile() {
+    selectedFile = null;
+    videoFile.value = '';
+    fileDrop.classList.remove('has-file');
+    fileIcon.textContent = '🎬';
+    fileTitle.textContent = 'Chọn video hoặc kéo thả vào đây';
+    fileSub.textContent = 'Hỗ trợ: MP4, WebM, MOV... (tối đa 8MB)';
+  }
+
+  videoFile.addEventListener('change', (e) => {
+    if (e.target.files && e.target.files[0]) setFile(e.target.files[0]);
+  });
+
+  fileClear.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    clearFile();
+  });
+
+  // Drag & drop
+  ['dragenter', 'dragover'].forEach(evt => {
+    fileDrop.addEventListener(evt, (e) => {
+      e.preventDefault();
+      fileDrop.classList.add('dragover');
+    });
+  });
+  ['dragleave', 'drop'].forEach(evt => {
+    fileDrop.addEventListener(evt, (e) => {
+      e.preventDefault();
+      fileDrop.classList.remove('dragover');
+    });
+  });
+  fileDrop.addEventListener('drop', (e) => {
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFile(e.dataTransfer.files[0]);
+    }
+  });
+
   // ===== TOAST =====
   let toastTimer = null;
-
   function showToast(msg, type = 'success') {
     clearTimeout(toastTimer);
     toastMsg.textContent = msg;
     toast.className = 'toast ' + type;
     toastIcon.textContent = type === 'success' ? '✅' : '❌';
-
-    requestAnimationFrame(() => {
-      toast.classList.add('show');
-    });
-
-    toastTimer = setTimeout(() => {
-      toast.classList.remove('show');
-    }, 4000);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
   }
 
   // ===== SEND =====
@@ -623,11 +615,11 @@
 
     const message = messageInput.value.trim();
     const link = linkInput.value.trim();
-    const video = videoInput.value.trim();
+    const videoUrl = videoUrlInput.value.trim();
+    const file = selectedFile;
 
-    // Validate
-    if (!message && !link && !video) {
-      showToast('Vui lòng nhập ít nhất một nội dung!', 'error');
+    if (!message && !link && !videoUrl && !file) {
+      showToast('Vui lòng nhập nội dung hoặc chọn video!', 'error');
       return;
     }
 
@@ -635,32 +627,51 @@
     let content = '';
     if (message) content += message;
     if (link) content += (content ? '\n\n' : '') + '🔗 **Link:** ' + link;
-    if (video) content += (content ? '\n\n' : '') + '🎬 **Video:** ' + video;
+    if (videoUrl) content += (content ? '\n\n' : '') + '🎬 **Video URL:** ' + videoUrl;
 
-    // Discord limit 2000 chars
     if (content.length > 2000) {
       showToast('Nội dung quá dài (tối đa 2000 ký tự)!', 'error');
       return;
     }
 
-    // Loading state
     sendBtn.disabled = true;
     sendText.innerHTML = '<span class="spinner"></span> Đang gửi...';
 
     try {
-      const res = await fetch(WEBHOOKS[currentChannel], {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: content,
+      let res;
+
+      if (file) {
+        // multipart/form-data khi có file
+        const formData = new FormData();
+        const payload = {
+          content: content || undefined,
           username: 'Notify Hub',
           avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png'
-        })
-      });
+        };
+        formData.append('payload_json', JSON.stringify(payload));
+        formData.append('files[0]', file, file.name);
+
+        res = await fetch(WEBHOOKS[currentChannel], {
+          method: 'POST',
+          body: formData
+        });
+      } else {
+        // JSON thường khi không có file
+        res = await fetch(WEBHOOKS[currentChannel], {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: content,
+            username: 'Notify Hub',
+            avatar_url: 'https://cdn.discordapp.com/embed/avatars/0.png'
+          })
+        });
+      }
 
       if (res.ok || res.status === 204) {
         showToast('Gửi thông báo thành công!', 'success');
         form.reset();
+        clearFile();
       } else {
         let errMsg = 'Gửi thất bại (HTTP ' + res.status + ')';
         try {
@@ -681,7 +692,6 @@
   // ===== INIT =====
   updateUI();
 
-  // ESC close sidebar
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeSidebarFn();
   });
